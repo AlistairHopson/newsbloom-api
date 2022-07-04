@@ -44,3 +44,31 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("returns relevant article information for specific ID", () => {
+    return request(app)
+      .get("/api/articles/9")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(1);
+        expect.objectContaining({
+          title: "They're not exactly dogs, are they?",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "Well? Think about it.",
+          created_at: 1591438200000,
+          votes: 0,
+        });
+      });
+  });
+  test("requests for invalid article IDs are rejected", () => {
+    return request(app)
+      .get("/api/articles/999999")
+      .expect(404)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.message).toBe("999999 is not a valid article ID.");
+      });
+  });
+});
