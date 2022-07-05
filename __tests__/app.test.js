@@ -34,7 +34,7 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        expect(body.topics.length > 0).toBe(true);
+        expect(body.topics.length).toBeGreaterThanOrEqual(0);
         body.topics.forEach((topic) => {
           expect(topic).toEqual(
             expect.objectContaining({
@@ -48,7 +48,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-  test("returns relevant article information for specific ID", () => {
+  test("returns relevant article information for specific ID (including count of comments)", () => {
     return request(app)
       .get("/api/articles/9")
       .expect(200)
@@ -61,6 +61,20 @@ describe("GET /api/articles/:article_id", () => {
             author: "butter_bridge",
             body: "Well? Think about it.",
             votes: 0,
+            comment_count: 2,
+          })
+        );
+      });
+  });
+  test("comment count is 0 for articles with no comments", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(1);
+        expect(body.article).toEqual(
+          expect.objectContaining({
+            comment_count: 0,
           })
         );
       });
@@ -173,7 +187,7 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        expect(body.users.length > 0).toBe(true);
+        expect(body.users.length).toBeGreaterThan(0);
         body.users.forEach((user) => {
           expect(user).toEqual(
             expect.objectContaining({
