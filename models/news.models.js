@@ -14,7 +14,24 @@ exports.selectArticleByID = (article_id) => {
       if (rowCount === 0) {
         return Promise.reject({
           status: 404,
-          message: `${article_id} is not a valid article ID.`,
+          message: `There are no articles with an ID of ${article_id}.`,
+        });
+      }
+      return rows[0];
+    });
+};
+
+exports.updateArticleVotes = (article_id, inc_votes) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *",
+      [article_id, inc_votes]
+    )
+    .then(({ rows, rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 400,
+          message: `There are no articles with an ID of ${article_id}.`,
         });
       }
       return rows[0];

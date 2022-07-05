@@ -1,6 +1,10 @@
 const express = require("express");
 
-const { getTopics, getArticleByID } = require("./controllers/news.controllers");
+const {
+  getTopics,
+  getArticleByID,
+  patchArticleVotes,
+} = require("./controllers/news.controllers");
 
 const app = express();
 
@@ -10,11 +14,16 @@ app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticleByID);
 
+app.patch("/api/articles/:article_id", patchArticleVotes);
+
 app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Not Found (Invalid Path)" });
 });
 
 app.use((err, req, res, next) => {
+  if (err.code) {
+    res.status(400).send({ message: "Invalid data type passed to endpoint." });
+  }
   if (err.status) {
     res.status(err.status).send({ message: err.message });
   } else {
