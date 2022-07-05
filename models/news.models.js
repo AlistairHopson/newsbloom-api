@@ -13,8 +13,8 @@ exports.selectArticleByID = (article_id) => {
     .then(({ rows, rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({
-          status: 400,
-          message: `${article_id} is not a valid article ID.`,
+          status: 404,
+          message: `There are no articles with an ID of ${article_id}.`,
         });
       }
       return rows[0];
@@ -31,7 +31,7 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
       if (rowCount === 0) {
         return Promise.reject({
           status: 400,
-          message: `${article_id} is not a valid article ID.`,
+          message: `There are no articles with an ID of ${article_id}.`,
         });
       }
       return rows[0];
