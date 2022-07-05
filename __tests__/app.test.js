@@ -65,10 +65,86 @@ describe("GET /api/articles/:article_id", () => {
   test("requests for invalid article IDs are rejected", () => {
     return request(app)
       .get("/api/articles/999999")
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
-        console.log(body);
         expect(body.message).toBe("999999 is not a valid article ID.");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("article votes can be increased", () => {
+    const addedVotes = { inc_votes: 55 };
+    return request(app)
+      .patch("/api/articles/9")
+      .send(addedVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(1);
+        expect.objectContaining({
+          title: "They're not exactly dogs, are they?",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "Well? Think about it.",
+          created_at: 1591438200000,
+          votes: 55,
+        });
+      });
+  });
+  test("article votes can be decreased", () => {
+    const addedVotes = { inc_votes: -55 };
+    return request(app)
+      .patch("/api/articles/9")
+      .send(addedVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(1);
+        expect.objectContaining({
+          title: "They're not exactly dogs, are they?",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "Well? Think about it.",
+          created_at: 1591438200000,
+          votes: -55,
+        });
+      });
+  });
+  test("article votes unchanged if inc_votes is 0", () => {
+    const addedVotes = { inc_votes: -55 };
+    return request(app)
+      .patch("/api/articles/9")
+      .send(addedVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(1);
+        expect.objectContaining({
+          title: "They're not exactly dogs, are they?",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "Well? Think about it.",
+          created_at: 1591438200000,
+          votes: 0,
+        });
+      });
+  });
+  test("requests to patch invalid article IDs are rejected", () => {
+    const addedVotes = { inc_votes: 99 };
+    return request(app)
+      .patch("/api/articles/999999")
+      .send(addedVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("999999 is not a valid article ID.");
+      });
+  });
+  test("requests made with invalid inc_votes category are rejected", () => {
+    const addedVotes = { inc_votes: "winter" };
+    return request(app)
+      .patch("/api/articles/9")
+      .send(addedVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid date passed to endpoint.");
       });
   });
 });
