@@ -35,11 +35,13 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.topics.length > 0).toBe(true);
-        body.topics.forEach(() => {
-          expect.objectContaining({
-            slug: expect.any(String),
-            description: expect.any(String),
-          });
+        body.topics.forEach((topic) => {
+          expect(topic).toEqual(
+            expect.objectContaining({
+              slug: expect.any(String),
+              description: expect.any(String),
+            })
+          );
         });
       });
   });
@@ -161,6 +163,26 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Invalid data type passed to endpoint.");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("returns an array of topic objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users.length > 0).toBe(true);
+        body.users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
