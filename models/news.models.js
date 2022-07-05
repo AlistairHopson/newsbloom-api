@@ -9,7 +9,15 @@ exports.selectTopics = () => {
 
 exports.selectArticleByID = (article_id) => {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+    .query(
+      `SELECT articles.*, COUNT(comments.comment_id) as comment_count
+      FROM articles
+      LEFT JOIN comments
+      ON articles.article_id = comments.article_id
+      WHERE articles.article_id = $1
+      GROUP BY articles.article_id;`,
+      [article_id]
+    )
     .then(({ rows, rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({
@@ -17,6 +25,8 @@ exports.selectArticleByID = (article_id) => {
           message: `There are no articles with an ID of ${article_id}.`,
         });
       }
+      const selectedID = rows[0];
+      selectedID.comment_count = parseInt(selectedID.comment_count);
       return rows[0];
     });
 };
