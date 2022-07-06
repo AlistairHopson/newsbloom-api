@@ -162,7 +162,7 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/999999")
       .send(addedVotes)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe(
           "There are no articles with an ID of 999999."
@@ -229,6 +229,51 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("returns relevant comments for specific article ID", () => {
+    return request(app)
+      .get("/api/articles/5/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(2);
+        expect(body.comments[0]).toEqual(
+          expect.objectContaining({
+            comment_id: 14,
+            body: "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.",
+            article_id: 5,
+            author: "icellusedkars",
+            votes: 16,
+          })
+        );
+        expect(body.comments[1]).toEqual(
+          expect.objectContaining({
+            comment_id: 15,
+            body: "I am 100% sure that we're not completely sure.",
+            article_id: 5,
+            author: "butter_bridge",
+            votes: 1,
+          })
+        );
+      });
+  });
+  test("If an article has no comments, returns 404 error", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Article #2 has no comments.");
+      });
+  });
+  test("If request parameters are invalid, returns 400 error", () => {
+    return request(app)
+      .get("/api/articles/five/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid data type passed to endpoint.");
       });
   });
 });

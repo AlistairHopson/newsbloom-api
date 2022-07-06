@@ -6,6 +6,7 @@ const {
   patchArticleVotes,
   getUsers,
   getArticles,
+  getArticleComments,
 } = require("./controllers/news.controllers");
 
 const app = express();
@@ -21,6 +22,8 @@ app.patch("/api/articles/:article_id", patchArticleVotes);
 app.get("/api/users", getUsers);
 
 app.get("/api/articles", getArticles);
+
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Not Found (Invalid Path)" });
