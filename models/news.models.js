@@ -1,3 +1,4 @@
+const e = require("express");
 const format = require("pg-format");
 const db = require("../db/connection");
 
@@ -10,7 +11,7 @@ exports.selectTopics = () => {
 exports.selectArticleByID = (article_id) => {
   return db
     .query(
-      `SELECT articles.*, COUNT(comments.comment_id) as comment_count
+      `SELECT articles.*, COUNT(comments.comment_id)::INT as comment_count
       FROM articles
       LEFT JOIN comments
       ON articles.article_id = comments.article_id
@@ -25,8 +26,6 @@ exports.selectArticleByID = (article_id) => {
           message: `There are no articles with an ID of ${article_id}.`,
         });
       }
-      const selectedID = rows[0];
-      selectedID.comment_count = parseInt(selectedID.comment_count);
       return rows[0];
     });
 };
@@ -52,4 +51,19 @@ exports.selectUsers = () => {
   return db.query("SELECT * FROM users;").then(({ rows }) => {
     return rows;
   });
+};
+
+exports.selectArticles = () => {
+  return db
+    .query(
+      `SELECT articles.*, COUNT(comments.comment_id)::INT as comment_count
+      FROM articles
+      LEFT JOIN comments
+      ON articles.article_id = comments.article_id
+      GROUP BY articles.article_id
+      ORDER BY created_at DESC;`
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
 };
