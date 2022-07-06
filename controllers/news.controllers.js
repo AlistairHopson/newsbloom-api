@@ -56,8 +56,8 @@ exports.getArticleComments = (req, res, next) => {
 exports.postArticleComment = (req, res, next) => {
   const { article_id } = req.params;
   const { username } = req.body;
-  const { comment } = req.body;
-  insertComment(article_id, username, comment)
+  const { body } = req.body;
+  insertComment(article_id, username, body)
     .then((addedComment) => res.status(201).send({ comment: addedComment }))
     .catch(next);
 };

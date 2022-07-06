@@ -96,7 +96,20 @@ exports.selectCommentsByArticle = (article_id) => {
     });
 };
 
-exports.insertComment = (article_id, username, comment) => {
+exports.insertComment = (article_id, username, body) => {
+  if (username === undefined) {
+    return Promise.reject({
+      status: 400,
+      message: "Username required to add comment.",
+    });
+  }
+  if (body === undefined) {
+    return Promise.reject({
+      status: 400,
+      message: "Post body required to add comment.",
+    });
+  }
+
   return db
     .query(
       `
@@ -108,7 +121,7 @@ exports.insertComment = (article_id, username, comment) => {
     .then(({ rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({
-          status: 401,
+          status: 404,
           message:
             "Only registered users can comment on articles. Please register first.",
         });
@@ -132,7 +145,7 @@ exports.insertComment = (article_id, username, comment) => {
             `INSERT INTO comments (article_id, author, body)
           VALUES ($1, $2, $3)
           RETURNING *`,
-            [article_id, username, comment]
+            [article_id, username, body]
           );
         })
         .then(({ rows }) => {

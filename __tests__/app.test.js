@@ -290,7 +290,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 
 describe("POST /api/articles/:article_id/comments", () => {
   test("allows comment to be posted on article with valid ID", () => {
-    const testComment = { username: "icellusedkars", comment: "I agree!" };
+    const testComment = { username: "icellusedkars", body: "I agree!" };
     return request(app)
       .post("/api/articles/5/comments")
       .send(testComment)
@@ -303,16 +303,17 @@ describe("POST /api/articles/:article_id/comments", () => {
             article_id: 5,
             author: "icellusedkars",
             votes: 0,
+            created_at: expect.any(String),
           })
         );
       });
   });
   test("does not allow comments to be posted by unexisting usernames (i.e. unregistered users)", () => {
-    const testComment = { username: "dave", comment: "I agree!" };
+    const testComment = { username: "dave", body: "I agree!" };
     return request(app)
       .post("/api/articles/5/comments")
       .send(testComment)
-      .expect(401)
+      .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe(
           "Only registered users can comment on articles. Please register first."
@@ -321,7 +322,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 
   test("requests to comment on non-existing articles are rejected", () => {
-    const testComment = { username: "icellusedkars", comment: "I agree!" };
+    const testComment = { username: "icellusedkars", body: "I agree!" };
     return request(app)
       .post("/api/articles/999999/comments")
       .send(testComment)
@@ -333,13 +334,35 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
   test("users cannot comment on invalid request parameters", () => {
-    const testComment = { username: "icellusedkars", comment: "I agree!" };
+    const testComment = { username: "icellusedkars", body: "I agree!" };
     return request(app)
       .post("/api/articles/five/comments")
       .send(testComment)
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toBe("Invalid data type passed to endpoint.");
+      });
+  });
+
+  test("users cannot comment with an incorrect post body (missing username)", () => {
+    const testComment = { myName: "icellusedkars", body: "I agree!" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(testComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Username required to add comment.");
+      });
+  });
+
+  test("users cannot comment with an incorrect post body (missing body)", () => {
+    const testComment = { username: "icellusedkars", myThoughts: "I agree!" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(testComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Post body required to add comment.");
       });
   });
 });
