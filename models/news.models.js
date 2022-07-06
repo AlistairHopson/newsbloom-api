@@ -39,7 +39,7 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
     .then(({ rows, rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({
-          status: 400,
+          status: 404,
           message: `There are no articles with an ID of ${article_id}.`,
         });
       }
@@ -65,5 +65,33 @@ exports.selectArticles = () => {
     )
     .then(({ rows }) => {
       return rows;
+    });
+};
+
+exports.selectCommentsByArticle = (article_id) => {
+  return db
+    .query(
+      `
+      SELECT * FROM articles
+      WHERE article_id = $1
+    `,
+      [article_id]
+    )
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          message: `There are no articles with an ID of ${article_id}.`,
+        });
+      }
+      return db
+        .query(
+          `SELECT * FROM comments
+      WHERE article_id = $1`,
+          [article_id]
+        )
+        .then(({ rows }) => {
+          return rows;
+        });
     });
 };
