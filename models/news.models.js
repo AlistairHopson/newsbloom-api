@@ -71,17 +71,27 @@ exports.selectArticles = () => {
 exports.selectCommentsByArticle = (article_id) => {
   return db
     .query(
-      `SELECT * FROM comments
-    WHERE article_id = $1`,
+      `
+      SELECT * FROM articles
+      WHERE article_id = $1
+    `,
       [article_id]
     )
-    .then(({ rows, rowCount }) => {
+    .then(({ rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({
           status: 404,
-          message: `Article #${article_id} has no comments.`,
+          message: `There are no articles with an ID of ${article_id}.`,
         });
       }
-      return rows;
+      return db
+        .query(
+          `SELECT * FROM comments
+      WHERE article_id = $1`,
+          [article_id]
+        )
+        .then(({ rows }) => {
+          return rows;
+        });
     });
 };

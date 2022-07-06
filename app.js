@@ -7,6 +7,7 @@ const {
   getUsers,
   getArticles,
   getArticleComments,
+  postArticleComment,
 } = require("./controllers/news.controllers");
 
 const app = express();

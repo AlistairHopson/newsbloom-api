@@ -260,12 +260,22 @@ describe("GET /api/articles/:article_id/comments", () => {
         );
       });
   });
-  test("If an article has no comments, returns 404 error", () => {
+  test("If an article has no comments, returns an empty array (200)", () => {
     return request(app)
       .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+  test("requests to view article comments with invalid article IDs are rejected", () => {
+    return request(app)
+      .get("/api/articles/999999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Article #2 has no comments.");
+        expect(body.message).toBe(
+          "There are no articles with an ID of 999999."
+        );
       });
   });
   test("If request parameters are invalid, returns 400 error", () => {
