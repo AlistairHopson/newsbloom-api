@@ -95,3 +95,61 @@ exports.selectCommentsByArticle = (article_id) => {
         });
     });
 };
+
+exports.insertComment = (article_id, username, body) => {
+  if (username === undefined) {
+    return Promise.reject({
+      status: 400,
+      message: "Username required to add comment.",
+    });
+  }
+  if (body === undefined) {
+    return Promise.reject({
+      status: 400,
+      message: "Post body required to add comment.",
+    });
+  }
+
+  return db
+    .query(
+      `
+      SELECT * FROM users
+      WHERE username = $1
+    `,
+      [username]
+    )
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          message:
+            "Only registered users can comment on articles. Please register first.",
+        });
+      }
+      return db
+        .query(
+          `
+        SELECT * FROM articles
+        WHERE article_id = $1
+      `,
+          [article_id]
+        )
+        .then(({ rowCount }) => {
+          if (rowCount === 0) {
+            return Promise.reject({
+              status: 404,
+              message: `There are no articles with an ID of ${article_id}.`,
+            });
+          }
+          return db.query(
+            `INSERT INTO comments (article_id, author, body)
+          VALUES ($1, $2, $3)
+          RETURNING *`,
+            [article_id, username, body]
+          );
+        })
+        .then(({ rows }) => {
+          return rows[0];
+        });
+    });
+};
