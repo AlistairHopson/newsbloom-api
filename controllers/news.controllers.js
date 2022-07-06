@@ -5,6 +5,7 @@ const {
   selectUsers,
   selectArticles,
   selectCommentsByArticle,
+  insertComment,
 } = require("../models/news.models");
 
 exports.getTopics = (req, res, next) => {
@@ -49,5 +50,14 @@ exports.getArticleComments = (req, res, next) => {
         comments,
       })
     )
+    .catch(next);
+};
+
+exports.postArticleComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username } = req.body;
+  const { comment } = req.body;
+  insertComment(article_id, username, comment)
+    .then((addedComment) => res.status(201).send({ comment: addedComment }))
     .catch(next);
 };

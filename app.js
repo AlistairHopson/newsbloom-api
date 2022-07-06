@@ -26,6 +26,8 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
+app.post("/api/articles/:article_id/comments", postArticleComment);
+
 app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Not Found (Invalid Path)" });
 });

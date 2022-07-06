@@ -287,3 +287,59 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("allows comment to be posted on article with valid ID", () => {
+    const testComment = { username: "icellusedkars", comment: "I agree!" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(testComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual(
+          expect.objectContaining({
+            comment_id: 19,
+            body: "I agree!",
+            article_id: 5,
+            author: "icellusedkars",
+            votes: 0,
+          })
+        );
+      });
+  });
+  test("does not allow comments to be posted by unexisting usernames (i.e. unregistered users)", () => {
+    const testComment = { username: "dave", comment: "I agree!" };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(testComment)
+      .expect(401)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Only registered users can comment on articles. Please register first."
+        );
+      });
+  });
+
+  test("requests to comment on non-existing articles are rejected", () => {
+    const testComment = { username: "icellusedkars", comment: "I agree!" };
+    return request(app)
+      .post("/api/articles/999999/comments")
+      .send(testComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "There are no articles with an ID of 999999."
+        );
+      });
+  });
+  test("users cannot comment on invalid request parameters", () => {
+    const testComment = { username: "icellusedkars", comment: "I agree!" };
+    return request(app)
+      .post("/api/articles/five/comments")
+      .send(testComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Invalid data type passed to endpoint.");
+      });
+  });
+});
