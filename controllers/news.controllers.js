@@ -37,7 +37,11 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles()
+  const sortRequest = req.query.sort_by;
+  const orderRequest = req.query.order;
+  const topicRequest = req.query.topic;
+
+  selectArticles(sortRequest, orderRequest, topicRequest)
     .then((articles) => res.status(200).send({ articles }))
     .catch(next);
 };

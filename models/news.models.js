@@ -53,19 +53,56 @@ exports.selectUsers = () => {
   });
 };
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      `SELECT articles.*, COUNT(comments.comment_id)::INT as comment_count
-      FROM articles
-      LEFT JOIN comments
-      ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
+exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
+  const validSortOptions = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  if (!validSortOptions.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      message: `${sort_by} is not a valid sorting criteria.`,
     });
+  }
+
+  const validOrderOptions = ["asc", "desc", "ASC", "DESC"];
+  if (!validOrderOptions.includes(order)) {
+    return Promise.reject({
+      status: 400,
+      message: `${order} is not a valid ordering criteria.`,
+    });
+  }
+
+  const validTopicOptions = ["mitch", "cats"];
+  if (topic !== undefined && !validTopicOptions.includes(topic)) {
+    return Promise.reject({
+      status: 404,
+      message: `There are no articles with ${topic} as a topic.`,
+    });
+  }
+
+  const queryValues = [];
+  let queryStr = `SELECT articles.*, COUNT(comments.comment_id)::INT as comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id`;
+
+  if (topic) {
+    queryValues.push(topic);
+    queryStr += ` WHERE topic = $1`;
+  }
+
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+
+  return db.query(queryStr, queryValues).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.selectCommentsByArticle = (article_id) => {
