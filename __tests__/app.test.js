@@ -231,6 +231,103 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("articles can be sorted by specified column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  test("article order can be specified", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("article sorting and ordering criteria can both be specified", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("votes", { ascending: true });
+      });
+  });
+  test("articles can be filtered by specified topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(1);
+        expect(body.articles[0]).toEqual(
+          expect.objectContaining({
+            article_id: 5,
+            title: "UNCOVERED: catspiracy to bring down democracy",
+            topic: "cats",
+            author: "rogersop",
+            body: "Bastet walks amongst us, and the cats are taking arms!",
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count: 2,
+          })
+        );
+      });
+  });
+  test("articles can be filtered by specified topic, and article sorting and ordering criteria can also both be specified", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&order=desc&topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(11);
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
+        body.articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: "mitch",
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+
+  test("invalid sort_by requests are rejected", () => {
+    return request(app)
+      .get("/api/articles?sort_by=rating")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("rating is not a valid sorting criteria.");
+      });
+  });
+
+  test("invalid sort_by requests are rejected", () => {
+    return request(app)
+      .get("/api/articles?order=downwards")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "downwards is not a valid ordering criteria."
+        );
+      });
+  });
+  test("invalid topic requests are rejected", () => {
+    return request(app)
+      .get("/api/articles?topic=space")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "There are no articles with space as a topic."
+        );
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
