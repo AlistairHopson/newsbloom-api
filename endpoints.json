@@ -1,27 +1,145 @@
 {
-  "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+  "/api": {
+      "GET": {
+           "description": "serves up a json representation of all the available endpoints of the api"
+           }
   },
-  "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "queries": [],
-    "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
-    }
-  },
-  "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
-    "exampleResponse": {
-      "articles": [
-        {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+
+  "/api/articles": {
+      "GET": {
+          "description": "serves an array of all articles",
+          "queries": [
+            "article_id",
+            "title",
+            "topic",
+            "author",
+            "body",
+            "created_at",
+            "votes",
+            "comment_count"
+          ],
+          "exampleResponse": {
+            "articles": [
+              {
+               "article_id": 7,
+                "title": "Z",
+                "topic": "mitch",
+                "author": "icellusedkars",
+                "body": "I was hungry.",
+                "created_at": "2020-01-07T14:08:00.000Z",
+                "votes": 0,
+                "comment_count": 0
+                    }
+                     ]
+                }
         }
-      ]
-    }
+      },
+
+   "/api/articles:article_id": {
+        "GET": {
+              "description": "serves an article containing specified article information",
+              "queries": [],
+              "validParameter": "integer",
+              "exampleResponse": {
+                "article": 
+                  {
+                  "article_id": 9,
+                  "title": "They're not exactly dogs, are they?",
+                  "topic": "mitch",
+                  "author": "butter_bridge",
+                  "body": "Well? Think about it.",
+                  "created_at": "2020-06-06T09:10:00.000Z",
+                  "votes": 0,
+                  "comment_count": 2
+                  }
+              }
+          },
+         "PATCH": {
+                 "description": "increases/decreases article votes, serving altered article with a key of article",
+                 "validParameter": "integer",
+                 "validBody": "{ inc_votes: newVote }",
+                 "exampleBody": "{ inc_votes: 55 }",
+                 "exampleResponse": {
+                   "updatedArticle": {
+                     "article_id": 9,
+                     "title": "They're not exactly dogs, are they?",
+                     "topic": "mitch",
+                     "author": "butter_bridge",
+                     "body": "Well? Think about it.",
+                     "created_at": "2020-06-06T09:10:00.000Z",
+                     "votes": 55
+                   }
+                 }
+               }
+     },
+     "/api/articles/:article_id/comments": {
+      "GET": {
+              "description": "serves array of all comments for given ID",
+              "queries": [],
+              "validParameter": "integer",
+              "exampleResponse": { "comments": [{
+                "comment_id": 15,
+                "body": "I am 100% sure that we're not completely sure.",
+                "article_id": 5,
+                "author": "butter_bridge",
+                "votes": 1,
+                "created_at": "2020-11-24T00:08:00.000Z"
+              }]}
+      },
+      "POST": {
+              "description": "posts and then serves an object containing a username and a comment",
+              "validParameter": "integer",
+              "validBody": "{ username: username, body: comment }",
+              "exampleBody": " { username: 'icellusedkars', body: 'I agree!'",
+              "exampleResponse": {"comment": {
+                "comment_id": 19,
+                "body": "I agree!",
+                "article_id": 5,
+                "author": "icellusedkars",
+                "votes": 0,
+                "created_at": "2022-07-07T13:42:23.748Z"
+              }}
+      }
+     },
+
+"/api/comments/:comment_id": {
+    "DELETE": {
+              "description": "allows specified comment to be deleted",
+              "validParameter": "integer",
+              "exampleResponse": "{ }"
+              }
+},
+
+"/api/topics": {
+  "GET": {
+        "description": "serves an array of all topics",
+        "queries": [],
+        "exampleResponse": {
+          "topics": [{ "slug": "football", "description": "FOOTIE!" }]
+        }
+       }
+},
+
+"/api/users": {
+  "GET": {
+        "description": "served an array of all users",
+        "queries": [],
+        "exampleResponse": {
+          "users": [{
+            "username": "butter_bridge",
+            "name": "jonny",
+            "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          }]
+        }
   }
 }
+}
+
+
+
+
+
+
+
+
+
