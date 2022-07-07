@@ -462,7 +462,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("DELETE /api/COMMENTS/:comment_id", () => {
+describe("DELETE /api/COMMENTS/:comment_id", () => {
   test("204 is sent to client when deleting a comment by a valid path", () => {
     return request(app)
       .delete("/api/comments/7")
@@ -495,5 +495,26 @@ describe.only("DELETE /api/COMMENTS/:comment_id", () => {
       .delete("/api/comments/7")
       .expect(204)
       .then(request(app).delete("/api/comments/7").expect(404));
+  });
+});
+
+describe("getApi", () => {
+  test("returns endpoints JSON", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual(
+          expect.objectContaining({
+            "/api": expect.any(Object),
+            "/api/articles": expect.any(Object),
+            "/api/articles:article_id": expect.any(Object),
+            "/api/articles/:article_id/comments": expect.any(Object),
+            "/api/comments/:comment_id": expect.any(Object),
+            "/api/topics": expect.any(Object),
+            "/api/users": expect.any(Object),
+          })
+        );
+      });
   });
 });
