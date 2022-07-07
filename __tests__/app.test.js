@@ -298,7 +298,6 @@ describe("GET /api/articles", () => {
         });
       });
   });
-
   test("invalid sort_by requests are rejected", () => {
     return request(app)
       .get("/api/articles?sort_by=rating")
@@ -307,7 +306,6 @@ describe("GET /api/articles", () => {
         expect(body.message).toBe("rating is not a valid sorting criteria.");
       });
   });
-
   test("invalid sort_by requests are rejected", () => {
     return request(app)
       .get("/api/articles?order=downwards")
@@ -461,5 +459,41 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.message).toBe("Post body required to add comment.");
       });
+  });
+});
+
+describe.only("DELETE /api/COMMENTS/:comment_id", () => {
+  test("204 is sent to client when deleting a comment by a valid path", () => {
+    return request(app)
+      .delete("/api/comments/7")
+      .expect(204)
+      .then(() => {
+        return db.query(`SELECT * FROM comments WHERE comment_id = 7;`);
+      })
+      .then(({ rowCount }) => {
+        expect(rowCount).toBe(0);
+      });
+  });
+  test("400 is sent to client when trying to delete a comment by an invalid path", () => {
+    return request(app)
+      .delete("/api/comments/seven")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("seven is not a valid ID.");
+      });
+  });
+  test("404 is sent to client when trying to delete a non-existing comment (with valid parameters)", () => {
+    return request(app)
+      .delete("/api/comments/99999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("There are no comments with an ID of 99999.");
+      });
+  });
+  test("Valid comments can only be deleted once", () => {
+    return request(app)
+      .delete("/api/comments/7")
+      .expect(204)
+      .then(request(app).delete("/api/comments/7").expect(404));
   });
 });

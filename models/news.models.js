@@ -190,3 +190,37 @@ exports.insertComment = (article_id, username, body) => {
         });
     });
 };
+
+exports.removeCommentByID = (comment_id) => {
+  if (!Number(+comment_id)) {
+    return Promise.reject({
+      status: 400,
+      message: `${comment_id} is not a valid ID.`,
+    });
+  }
+  return db
+    .query(
+      `
+      SELECT * FROM comments
+      WHERE comment_id = $1
+    `,
+      [comment_id]
+    )
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          message: `There are no comments with an ID of ${comment_id}.`,
+        });
+      }
+      return db
+        .query(
+          `DELETE FROM comments
+        WHERE comment_id = $1`,
+          [comment_id]
+        )
+        .then((result) => {
+          return result;
+        });
+    });
+};
