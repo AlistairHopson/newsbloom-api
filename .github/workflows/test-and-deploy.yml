@@ -20,11 +20,10 @@ jobs:
           postgresql user: "test_user"
           postgresql password: "test_password"
       - name: Run Integration Tests
-        run: PGDATABASE=test_db PGUSER=test_user PGPASSWORD=test_password npm test
+        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm test
   deploy:
     runs-on: ubuntu-latest
     needs: test
-    steps:
       - name: checkout and clone repo
         uses: actions/checkout@v2
 
