@@ -490,12 +490,6 @@ describe("DELETE /api/COMMENTS/:comment_id", () => {
         expect(body.message).toBe("There are no comments with an ID of 99999.");
       });
   });
-  test("Valid comments can only be deleted once", () => {
-    return request(app)
-      .delete("/api/comments/7")
-      .expect(204)
-      .then(request(app).delete("/api/comments/7").expect(404));
-  });
 });
 
 describe("getApi", () => {
