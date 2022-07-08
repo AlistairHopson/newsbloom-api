@@ -7,6 +7,7 @@ const {
   selectCommentsByArticle,
   insertComment,
   removeCommentByID,
+  selectUserByUsername,
 } = require("../models/news.models");
 
 const endpoints = require("../endpoints.json");
@@ -78,4 +79,13 @@ exports.deleteCommentByID = (req, res, next) => {
 
 exports.getApi = (req, res, next) => {
   res.status(200).send(endpoints);
+};
+
+exports.getUserByUsername = (req, res, next) => {
+  const { username } = req.params;
+  selectUserByUsername(username)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch(next);
 };
