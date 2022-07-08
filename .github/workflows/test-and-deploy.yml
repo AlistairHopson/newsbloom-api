@@ -26,7 +26,6 @@ jobs:
     needs: test
       - name: checkout and clone repo
         uses: actions/checkout@v2
-
       - name: deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
