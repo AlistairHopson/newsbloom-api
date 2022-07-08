@@ -1,0 +1,26 @@
+name: Test & Deploy
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm install
+      - name: Setup Postgres
+        uses: harmon758/postgresql-actionav1
+        with:
+          postgresql db: "my_db"
+          postgresql user: "test_user"
+          postgresql password: "test_password"
+      - name: Run Integration Tests
+         run: PGDATABASE=test_db PGUSER=test_user PGPASSWORD=test_password npm test
+  deploy:
+  runs-on: ubuntu-latest
+  needs: test
