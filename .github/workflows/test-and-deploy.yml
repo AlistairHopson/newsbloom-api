@@ -16,7 +16,7 @@ jobs:
       - name: Setup Postgres
         uses: harmon758/postgresql-action@v1
         with:
-          postgresql db: "my_db"
+          postgresql db: "nc_news_test"
           postgresql user: "test_user"
           postgresql password: "test_password"
       - name: Run Integration Tests
