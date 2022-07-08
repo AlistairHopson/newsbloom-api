@@ -512,3 +512,32 @@ describe("getApi", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("returns user information for specified user", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(1);
+        expect(body.user).toEqual(
+          expect.objectContaining({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          })
+        );
+      });
+  });
+  test("requests for non-existing users are rejected (404)", () => {
+    return request(app)
+      .get("/api/users/margarine_bridge")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "There are no users with margarine_bridge as a username."
+        );
+      });
+  });
+});

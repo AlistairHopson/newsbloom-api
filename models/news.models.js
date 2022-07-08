@@ -224,3 +224,21 @@ exports.removeCommentByID = (comment_id) => {
         });
     });
 };
+
+exports.selectUserByUsername = (username) => {
+  return db
+    .query(
+      `SELECT * FROM users
+    WHERE username = $1`,
+      [username]
+    )
+    .then(({ rows, rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          message: `There are no users with ${username} as a username.`,
+        });
+      }
+      return rows[0];
+    });
+};

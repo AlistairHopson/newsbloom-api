@@ -132,7 +132,23 @@
           }]
         }
   }
+},
+
+"/api/users/:username": {
+  "GET": {
+        "description": "servers user object when requesting specific username",
+        "queries": [],
+        "validParameter": "varchar",
+        "exampleResponse": {
+          "user": {
+            "username": "butter_bridge",
+            "name": "jonny",
+            "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          }
+        }
+  }
 }
+
 }
 
 
