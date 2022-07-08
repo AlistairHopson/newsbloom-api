@@ -24,6 +24,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: test
+    steps:
       - name: checkout and clone repo
         uses: actions/checkout@v2
 
