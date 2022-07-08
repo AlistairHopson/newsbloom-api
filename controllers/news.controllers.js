@@ -77,5 +77,5 @@ exports.deleteCommentByID = (req, res, next) => {
 };
 
 exports.getApi = (req, res, next) => {
-  res.status(200).send(endpoints).catch(next);
+  res.status(200).send(endpoints);
 };
