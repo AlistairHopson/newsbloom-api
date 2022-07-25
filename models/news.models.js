@@ -79,30 +79,38 @@ exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
     });
   }
 
-  const validTopicOptions = ["mitch", "cats"];
-  if (topic !== undefined && !validTopicOptions.includes(topic)) {
-    return Promise.reject({
-      status: 404,
-      message: `There are no articles with ${topic} as a topic.`,
-    });
-  }
+  return db
+    .query("SELECT * FROM topics;")
+    .then((results) => {
+      const validTopicOptions = results.rows.map((row) => {
+        return row.slug;
+      });
+      console.log(validTopicOptions);
+      if (topic !== undefined && !validTopicOptions.includes(topic)) {
+        return Promise.reject({
+          status: 404,
+          message: `There are no articles with ${topic} as a topic.`,
+        });
+      }
 
-  const queryValues = [];
-  let queryStr = `SELECT articles.*, COUNT(comments.comment_id)::INT as comment_count
+      const queryValues = [];
+      let queryStr = `SELECT articles.*, COUNT(comments.comment_id)::INT as comment_count
     FROM articles
     LEFT JOIN comments
     ON articles.article_id = comments.article_id`;
 
-  if (topic) {
-    queryValues.push(topic);
-    queryStr += ` WHERE topic = $1`;
-  }
+      if (topic) {
+        queryValues.push(topic);
+        queryStr += ` WHERE topic = $1`;
+      }
 
-  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+      queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
 
-  return db.query(queryStr, queryValues).then(({ rows }) => {
-    return rows;
-  });
+      return db.query(queryStr, queryValues);
+    })
+    .then(({ rows }) => {
+      return rows;
+    });
 };
 
 exports.selectCommentsByArticle = (article_id) => {
