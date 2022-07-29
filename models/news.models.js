@@ -119,6 +119,7 @@ exports.selectCommentsByArticle = (article_id) => {
       `
       SELECT * FROM articles
       WHERE article_id = $1
+      ORDER BY created_at DESC
     `,
       [article_id]
     )
