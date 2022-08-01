@@ -1,4 +1,4 @@
-# Newsbloom
+# Newsbloom-API
 
 View the project: https://newsbloom.herokuapp.com/api
 
