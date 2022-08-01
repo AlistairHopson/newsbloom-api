@@ -1,10 +1,12 @@
 # Newsbloom-API
 
-View the project: https://newsbloom.herokuapp.com/api
+View the Newsbloom API: https://newsbloom.herokuapp.com/api
 
 ## Overview
 
-Newsbloom is an application project that serves news-related data in a similar manner to websites such as Reddit. It serves articles and user data to clients, and allows interaction through votes and comments.
+Newsbloom is an application that serves news data in a similar manner to websites such as Reddit. It serves articles and user data to clients, and allows interaction through votes and comments.
+
+This repository contains the backend architecture and a link to the hosted API. To see the frontend repository, visit https://github.com/AlistairHopson/newsbloom
 
 ## Initial Setup Instructions:
 
