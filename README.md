@@ -1,12 +1,14 @@
 # Newsbloom-API
 
-View the Newsbloom API: https://newsbloom.herokuapp.com/api
+This repository contains the backend architecture and a link to the hosted API. To try Newsbloom, visit https://newsbloom.netlify.app/
+
+To see the frontend repository, visit https://github.com/AlistairHopson/newsbloom
+
+The Newsbloom API is currently hosted at: https://newsbloom.cyclic.app/api _(previously https://newsbloom.herokuapp.com/api)_
 
 ## Overview
 
 Newsbloom is an application that serves news data in a similar manner to websites such as Reddit. It serves articles and user data to clients, and allows interaction through votes and comments.
-
-This repository contains the backend architecture and a link to the hosted API. To see the frontend repository, visit https://github.com/AlistairHopson/newsbloom
 
 ## Initial Setup Instructions:
 
