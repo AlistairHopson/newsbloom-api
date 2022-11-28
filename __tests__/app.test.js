@@ -335,7 +335,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.comments.length).toBe(2);
-        expect(body.comments[0]).toEqual(
+        expect(body.comments[1]).toEqual(
           expect.objectContaining({
             comment_id: 14,
             body: "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.",
@@ -344,7 +344,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             votes: 16,
           })
         );
-        expect(body.comments[1]).toEqual(
+        expect(body.comments[0]).toEqual(
           expect.objectContaining({
             comment_id: 15,
             body: "I am 100% sure that we're not completely sure.",
